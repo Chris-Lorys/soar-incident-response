@@ -9,7 +9,7 @@ Une étape marquée « approbation: true » met l'exécution EN ATTENTE ; elle r
 analyste a décidé (route POST /approbations/... de l'API).
 """
 import json, re
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from banc import environnement as env, scenario as sc
 from . import file

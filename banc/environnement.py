@@ -6,7 +6,6 @@ L'horloge avance avec le rejeu : à 07:28, on ne voit ni les journaux ni les fic
 import json, os, re, time
 from contextlib import contextmanager
 from datetime import datetime, timedelta
-from pathlib import Path
 from . import scenario as sc
 
 ENV = sc.ENV

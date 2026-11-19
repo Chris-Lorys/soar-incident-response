@@ -1,7 +1,5 @@
 """Le banc d'essai : rejouer la matinée d'alertes dans le SOAR, puis noter ce qu'il a produit."""
-import csv, json, re, time
-from datetime import datetime
-from pathlib import Path
+import csv, re, time
 from . import scenario as sc, environnement as env
 
 RESULTATS = sc.RACINE / "resultats"

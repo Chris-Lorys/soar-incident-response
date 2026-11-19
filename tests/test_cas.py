@@ -54,7 +54,7 @@ def test_refus_humain(alertes, monkeypatch):
 def test_rejeu_complet_relie_les_alertes(alertes, monkeypatch):
     c = _mode_complet(monkeypatch)
     for a in alertes:
-        r = _recevoir(c, a)
+        _recevoir(c, a)
         for d in c.get("/approbations", headers=ANALYSTE).json():
             c.post(f"/approbations/{d['execution']}/{d['ref']}", headers=ANALYSTE,
                    json={"decision": "approuver", "analyste": "analyste-garde", "apres_minutes": 12})

@@ -16,7 +16,7 @@ Un playbook est un fichier YAML (même format que Tracecat, en plus petit) :
 Le moteur valide le playbook, calcule l'ordre des étapes, évalue les expressions SANS eval(),
 exécute chaque étape par le registre, et garde l'historique de tout ce qu'il a fait.
 """
-import ast, operator, re, time
+import ast, operator, re
 from dataclasses import dataclass, field
 from pathlib import Path
 

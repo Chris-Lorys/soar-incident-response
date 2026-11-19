@@ -13,7 +13,7 @@ On fait la même chose avec une base SQLite :
 
 Lancer un travailleur dans un terminal :   python -m minisoar.travailleur
 """
-import json, os, socket, sqlite3, sys, time, uuid
+import json, os, socket, sqlite3, time, uuid
 from datetime import datetime
 
 from banc import environnement as env

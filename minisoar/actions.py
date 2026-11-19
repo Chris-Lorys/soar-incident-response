@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from typing import Annotated, Callable
 
 import requests
-from pydantic import Field, IPvAnyAddress, ValidationError, validate_call
+from pydantic import Field, IPvAnyAddress, validate_call
 
 from banc import environnement as env
 

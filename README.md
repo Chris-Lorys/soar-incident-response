@@ -15,8 +15,13 @@ L'architecture reprend, en petit, celle de **[Tracecat](https://github.com/Trace
 
 ## Travail réalisé
 
-- mise en œuvre des six composants du SOAR (registre, moteur, API, file durable, cas, IA) et de leurs playbooks ;
-- **45 tests automatisés** (pytest), un **script de rejeu en ligne de commande** et une **intégration continue** GitHub Actions.
+- **Actions de réponse** : mise en œuvre du registre d'actions (blocage d'IP, désactivation de comptes, arrêt de processus, lecture et retrait de clés SSH) avec validation des entrées, garde-fous et idempotence.
+- **Playbooks** : rédaction et exécution de playbooks YAML pour la force brute SSH, les connexions suspectes et l'activité anormale sur le serveur.
+- **Réception des alertes** : API FastAPI qui reçoit les alertes SIEM, Wazuh et EDR, les normalise vers un format commun et les dédoublonne.
+- **Exécution durable** : file SQLite et travailleurs parallèles, reprise après panne sans double action, annulation d'exécutions.
+- **Gestion des cas** : corrélation des alertes par observables, approbation humaine des actions sensibles, rapport d'incident et calcul du MTTD et du MTTC.
+- **IA** : intégration d'un LLM local pour repérer la clé SSH et la crontab de l'attaquant, avec défense contre l'injection de prompt.
+- **Validation** : rejeu d'un scénario d'intrusion sur de vrais journaux SSH (83/100, 11 verdicts justes sur 11), 45 tests automatisés et intégration continue GitHub Actions.
 
 ## Ce que fait le SOAR
 

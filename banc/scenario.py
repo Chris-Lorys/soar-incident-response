@@ -4,7 +4,7 @@
 Construit le dossier `environnement/` : les journaux, le pare-feu, les comptes et le disque
 du serveur, tels qu'ils sont à 09:20 le matin de l'attaque, plus le flux d'alertes du SIEM.
 """
-import json, re, shutil
+import gc, json, re, shutil, time
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -94,6 +94,22 @@ def _alertes(auth):
             for i, (t, r, n, ip, c, d) in enumerate(alertes, 1)]
 
 
+def _effacer(dossier):
+    """Supprime le dossier environnement/. Sous Windows, un fichier encore ouvert (connexion SQLite
+    pas encore libérée) ne peut pas être supprimé : on libère les connexions orphelines et on réessaie."""
+    for essai in range(5):
+        if not dossier.exists():
+            return
+        gc.collect()
+        try:
+            shutil.rmtree(dossier)
+            return
+        except PermissionError:
+            if essai == 4:
+                raise
+            time.sleep(0.2 * (essai + 1))
+
+
 def construire():
     """(Re)crée `environnement/` dans son état de 09:20, avant toute réponse. Renvoie les alertes."""
     reel = []
@@ -103,8 +119,7 @@ def construire():
             reel.append((datetime.strptime("2016 " + m.group(1), "%Y %b %d %H:%M:%S"), l))
     auth = sorted(reel + _lignes_synthetiques(), key=lambda x: x[0])
 
-    if ENV.exists():
-        shutil.rmtree(ENV)
+    _effacer(ENV)
     j, hote = ENV / "journaux", ENV / "hote-LabSZ"
     for d in [j, ENV / "pare-feu", hote / "etc", hote / f"home/{COMPTE}/.ssh", hote / "var/spool/cron"]:
         d.mkdir(parents=True)

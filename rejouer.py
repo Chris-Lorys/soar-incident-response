@@ -35,6 +35,9 @@ def main():
 
     if mode != "simple":
         api.mode_durable(ia=mode == "ia")
+    if mode == "ia":
+        from minisoar import ia
+        os.environ.setdefault("SOAR_MODELE", ia.MODELE)      # pour la colonne « modele » de scores.csv
 
     def envoyer(alerte):
         source, brut = scenario.a_envoyer(alerte)

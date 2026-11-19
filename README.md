@@ -21,7 +21,7 @@ L'architecture reprend, en petit, celle de **[Tracecat](https://github.com/Trace
 - **Exécution durable** : file SQLite et travailleurs parallèles, reprise après panne sans double action, annulation d'exécutions.
 - **Gestion des cas** : corrélation des alertes par observables, approbation humaine des actions sensibles, rapport d'incident et calcul du MTTD et du MTTC.
 - **IA** : intégration d'un LLM local pour repérer la clé SSH et la crontab de l'attaquant, avec défense contre l'injection de prompt.
-- **Validation** : rejeu d'un scénario d'intrusion sur de vrais journaux SSH (83/100, 11 verdicts justes sur 11), 45 tests automatisés et intégration continue GitHub Actions.
+- **Validation** : rejeu d'un scénario d'intrusion sur de vrais journaux SSH (95/100 avec l'étape IA, 83/100 sans, 11 verdicts justes sur 11), 45 tests automatisés et intégration continue GitHub Actions (Linux et Windows).
 
 ## Ce que fait le SOAR
 
@@ -105,9 +105,9 @@ Les 11 alertes partent par HTTP vers le webhook de leur outil, dans leur format.
 |---|---|---|---|---|
 | `--mode simple` : API + playbooks déterministes | 32/35 | 30/35 | 18/30 | **80/100** |
 | `--mode complet` : + file durable, cas, approbations | 35/35 | 30/35 | 18/30 | **83/100** |
-| `--mode ia` : + étape IA (Ollama) | dépend du modèle | | jusqu'à 30/30 | |
+| `--mode ia` : + étape IA (Ollama, `qwen2.5:3b`) | 35/35 | 30/35 | 30/30 | **95/100** |
 
-Le mode complet relie 4 alertes en un seul cas critique (dont une fusion à 09:20), ferme automatiquement les 6 cas de robots et mesure **MTTD = 1 h 15 min 55 s** (début de l'attaque → détection) et **MTTC = 0 s** (détection → premier confinement). Les deux actions restantes (retirer la clé SSH et la crontab de l'attaquant) demandent du **jugement** : c'est le rôle de l'étape IA, toujours sous approbation humaine.
+Le mode complet relie 4 alertes en un seul cas critique (dont une fusion à 09:20), ferme automatiquement les 6 cas de robots et mesure **MTTD = 1 h 15 min 55 s** (début de l'attaque → détection) et **MTTC = 0 s** (détection → premier confinement). Les deux actions restantes (retirer la clé SSH et la crontab de l'attaquant) demandent du **jugement** : c'est le rôle de l'étape IA, toujours sous approbation humaine. Avec `qwen2.5:3b` exécuté en local sur CPU (portable i7, 16 Go de RAM), le modèle désigne la bonne clé et la bonne ligne de crontab parmi les entrées légitimes, sans aucun dégât : **95/100** pour un rejeu complet de 55 s. Le seul fait manqué est le signalement de l'IP source de l'injection de prompt (198.51.100.23), que le modèle n'a pas relevée, mais à laquelle il n'a pas obéi non plus.
 
 ## Sécurité dès la conception
 
@@ -216,4 +216,4 @@ soar-incident-response/
 
 This project is a small Security Orchestration, Automation and Response platform written in Python, modelled on the open-source SOAR Tracecat. It receives alerts from a SIEM, Wazuh or an EDR through authenticated FastAPI webhooks, normalises and deduplicates them, and runs YAML playbooks through a workflow engine (topological ordering, conditional steps, sandboxed `${{ }}` expressions evaluated on a whitelisted AST instead of `eval`). Actions go through a typed registry with input validation, built-in guardrails, idempotency and retries. Executions are durable (SQLite queue, parallel workers, leases, crash recovery), alerts are grouped into cases by shared observables, risky actions wait for analyst approval, and optional AI steps (local LLM via Ollama) are constrained by JSON schemas, tool whitelists and human review to resist prompt injection.
 
-It is evaluated by replaying a realistic attack (real OpenSSH logs from Loghub plus a synthetic slow brute-force intrusion, persistence and cryptominer) and scored out of 100: the deterministic configuration reaches **83/100** with all 11 verdicts correct, MTTD and MTTC measured automatically. It ships with 45 pytest tests and continuous integration.
+It is evaluated by replaying a realistic attack (real OpenSSH logs from Loghub plus a synthetic slow brute-force intrusion, persistence and cryptominer) and scored out of 100: the deterministic configuration reaches **83/100** with all 11 verdicts correct, and **95/100** with the AI step (local `qwen2.5:3b` on CPU), which picks the attacker's SSH key and cron entry among legitimate ones with no collateral damage. It ships with 45 pytest tests and continuous integration.

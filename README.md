@@ -16,7 +16,6 @@ L'architecture reprend, en petit, celle de **[Tracecat](https://github.com/Trace
 ## Travail réalisé
 
 - mise en œuvre des six composants du SOAR (registre, moteur, API, file durable, cas, IA) et de leurs playbooks ;
-- correction du chargement du registre (toutes les intégrations sont disponibles quel que soit le module importé en premier) ;
 - **45 tests automatisés** (pytest), un **script de rejeu en ligne de commande** et une **intégration continue** GitHub Actions.
 
 ## Ce que fait le SOAR
